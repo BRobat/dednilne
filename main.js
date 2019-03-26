@@ -4,7 +4,7 @@ var ctx = canv.getContext("2d");
 canv.width = window.innerWidth;
 canv.height = window.innerHeight;
 
-document.addEventListener("mousemove", upDest, false);
+document.addEventListener("click", upDest, false);
 
 // input -> calculation -> display
 
@@ -14,44 +14,46 @@ document.addEventListener("mousemove", upDest, false);
 // everything is draw relative to cam position
 
 //components: components[]
-let midx = canv.width/2;
-let midy = canv.height/2;
+let midx = canv.width / 2;
+let midy = canv.height / 2;
 
 let pl = [
-    {x: midx, y: midy, d: 15},
-     {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15},
-    // {x: midx, y: midy, d: 15}
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 },
+    { x: midx, y: midy, d: 15 }
 ]
-let cam = {x: 0, y: 0}
-let dest = {gx: 0, gy: 0}
+
+let comp = [
+    { x: 10, y: 20, w: 30, h: 40 }
+]
+let cam = { x: 0, y: 0 }
+let dest = { x: midx + 0.01, y: midy + 0.01 }
 
 
 setInterval(() => {
     ctx.clearRect(0, 0, canv.width, canv.height);
     upScene();
     drScene();
-}, 1000);
+}, 10);
 
 // draw
 
-function drScene(){
+function drScene() {
     drBackground();
     drPlayer();
     drComponents();
-    
+
 }
 
 function drPlayer() {
     pl.map((p) => {
-        gx = canv.width/2 - p.x - cam.x
-        gy = canv.height/2 - p.y - cam.y
         ctx.beginPath();
-        ctx.arc(gx, gy, 15, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
         ctx.fill();
         ctx.closePath();
@@ -59,12 +61,18 @@ function drPlayer() {
 }
 
 function drComponents() {
-
+    comp.map((c) => {
+        ctx.beginPath();
+        ctx.rect(c.x, c.y, c.w, c.h);
+        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fill();
+        ctx.closePath();
+    })
 }
 
 function drBackground() {
     ctx.beginPath();
-    ctx.rect(0,0,canv.width,canv.height);
+    ctx.rect(0, 0, canv.width, canv.height);
     ctx.fillStyle = "rgb(126, 126, 126)";
     ctx.fill();
     ctx.closePath();
@@ -73,44 +81,38 @@ function drBackground() {
 // calculate
 
 function upScene() {
-    upCamPos();
     upPlPos();
     upCom();
 }
 
-function upCamPos() {
-    cam.x = pl[pl.length-1].x
-    cam.y = pl[pl.length-1].y
-}
-
 function upPlPos() {
-    
-    for(let i = 0; i < pl.length; i++) {
-        let a = mode(pl[i].x  - dest.gx)
-        let b = mode(pl[i].y  - dest.gy)
-        let r = pita(a,b)
 
-        console.log(i,pl[i].x, cam.x, dest.gx, a)
+    for (let i = 0; i < pl.length; i++) {
+        let a = mode(pl[i].x - dest.x)
+        let b = mode(pl[i].y - dest.y)
+        let r = pita(a, b)
 
         let d = 1
-        if (r > 0.5){
-            d = 5 + r/100 - 3/(i+1)
+        if (r > 10) {
+            d = 10 * (1 / (i + 1) + 1 / r)
         } else d = 0;
-        
-        if (pl[i].x <= dest.x)  pl[i].x += (d * (a/r))
-            else pl[i].x -= (d * (a/r));
-    
-        if (pl[i].y <= dest.y)  pl[i].y += (d * (b/r))
-            else pl[i].y -= (d * (b/r));
+
+        if (dontCollide()) {
+            if (pl[i].x <= dest.x) pl[i].x += (d * (a / r))
+            else pl[i].x -= (d * (a / r));
+
+            if (pl[i].y <= dest.y) pl[i].y += (d * (b / r))
+            else pl[i].y -= (d * (b / r));
+        }
     }
 
 
     // pl.map((p,i) => {
-    //     let a = mode(p.x - cam.x - dest.gx)
-    //     let b = mode(p.y - cam.y - dest.gy)
+    //     let a = mode(p.x - cam.x - dest.x)
+    //     let b = mode(p.y - cam.y - dest.y)
     //     let r = pita(a,b)
 
-    //     console.log(p.x, cam.x, dest.gx, a)
+    //     console.log(p.x, cam.x, dest.x, a)
 
     //     let d = 1
     //     if (r > 0.5){
@@ -119,7 +121,7 @@ function upPlPos() {
 
     //     if (p.x <= dest.x)  p.x += (d * (a/r))
     //         else p.x -= (d * (a/r));
-    
+
     //     if (p.y <= dest.y)  p.y += (d * (b/r))
     //         else p.y -= (d * (b/r));
     // })
@@ -130,22 +132,35 @@ function upCom() {
 }
 
 function upDest(e) {
-    dest.gx = e.clientX - canv.offsetLeft;
-    dest.gy = e.clientY - canv.offsetTop;
+    dest.x = e.clientX - canv.offsetLeft;
+    dest.y = e.clientY - canv.offsetTop;
+}
+
+
+function dontCollide() {
+
+    comp.map((c) => {
+        pl.map((p) => {
+            
+        })
+    })
+
+
+
 }
 
 
 
 function pita(x, y) {
-    return Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 }
 
-function sin(x,y) {
-    return Math.sin(x/y)
+function sin(x, y) {
+    return Math.sin(x / y)
 }
 
 function mode(x) {
-    return Math.sqrt(Math.pow(x,2))
+    return Math.sqrt(Math.pow(x, 2))
 }
 
 
