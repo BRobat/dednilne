@@ -5,6 +5,7 @@ canv.width = window.innerWidth;
 canv.height = window.innerHeight;
 
 document.addEventListener("click", upDest, false);
+document.addEventListener("touchstart", upDest, false);
 //document.addEventListener("mousemove", upDest, false);
 
 // input -> calculation -> display
@@ -162,7 +163,7 @@ function upPart(p) {
         if (r > 10 && r < canv.width/2 && colDet(comp, p[i])) {
             d = 200/(r*r)
         } else if (r > canv.width/2) {
-            d = -0.02
+            d = -2000/(r*r)
         } else d = 0;
 
 
@@ -180,6 +181,7 @@ function upCom() {
 }
 
 function upDest(e) {
+    document.removeEventListener("touchstart",upDest)
     dest.x = e.clientX - canv.offsetLeft;
     dest.y = e.clientY - canv.offsetTop;
 }
