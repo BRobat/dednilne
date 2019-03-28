@@ -33,7 +33,7 @@ let pl = [
 
 let comp = objGen(10, 30, 50);
 
-let part = objGen(20,5,5);
+let part = objGen(50,5,5);
 
 let cam = { x: 0, y: 0 }
 
@@ -159,9 +159,11 @@ function upPart(p) {
 
 
         let d = 1
-        if (r > 10 && colDet(comp, p[i])) {
-            d = 2 * (1 / (i * i / 2 + 3) + r / 100)
-        } else d = -0.3;
+        if (r > 10 && r < canv.width/2 && colDet(comp, p[i])) {
+            d = 200/(r*r)
+        } else if (r > canv.width/2) {
+            d = -0.02
+        } else d = 0;
 
 
         if (p[i].x <= dest.x) p[i].x -= (d * (a / r))
