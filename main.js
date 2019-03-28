@@ -16,26 +16,28 @@ document.addEventListener("click touchstart", upDest, false);
 // everything is draw relative to cam position
 
 //components: components[]
+
+var img = new Image();
+img.src = "./assets/ghost.svg"
+
 let isActv = false;
 
 let midx = canv.width / 2;
 let midy = canv.height / 2;
 
 let pl = [
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15, d: 15 },
-    { x: midx, y: midy, w: 15, h: 15 }
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 },
+    { x: midx, y: midy, w: 50, h: 50, d: 15 }
 ]
 
 let comp = objGen(10, 30, 50);
-
 let part = objGen(50,5,5);
-
 let cam = { x: 0, y: 0 }
 
 let dest = { x: midx + 0.01, y: midy + 0.01 }
@@ -54,14 +56,12 @@ function drScene() {
     drPlayer();
     drComponents();
     drPart();
-
 }
 
 function drPlayer() {
     pl.map((p) => {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.w, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.drawImage(img, p.x, p.y, p.w, p.h);
         ctx.fill();
         ctx.closePath();
     })
@@ -112,21 +112,17 @@ function upPlPos() {
         let b = mode(pl[i].y - dest.y)
         let r = pita(a, b)
 
-
         let d = 1
         if (r > 10 && colDet(comp, pl[i])) {
             d = 2 * (1 / (i * i / 2 + 3) + r / 100)
         } else d = 0.5;
-
 
         if (pl[i].x <= dest.x) pl[i].x += (d * (a / r))
         else pl[i].x -= (d * (a / r));
 
         if (pl[i].y <= dest.y) pl[i].y += (d * (b / r))
         else pl[i].y -= (d * (b / r));
-
     }
-
 
     // pl.map((p,i) => {
     //     let a = mode(p.x - cam.x - dest.x)
@@ -161,9 +157,9 @@ function upPart(p) {
 
         let d = 1
         if (r > 10 && r < canv.width/2 && colDet(comp, p[i])) {
-            d = 200/(r*r)
+            d = 100/(r*r)
         } else if (r > canv.width/2) {
-            d = -2000/(r*r)
+            d = -0.2
         } else d = 0;
 
 
@@ -184,10 +180,6 @@ function upDest(e) {
     document.removeEventListener("touchstart",upDest)
     dest.x = e.clientX - canv.offsetLeft;
     dest.y = e.clientY - canv.offsetTop;
-}
-
-function mouseActv(e) {
-    console.log(e)
 }
 
 
