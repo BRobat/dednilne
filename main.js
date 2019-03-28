@@ -5,7 +5,7 @@ canv.width = window.innerWidth;
 canv.height = window.innerHeight;
 
 document.addEventListener("click", upDest, false);
-document.addEventListener("touchstart", upDest, false);
+document.addEventListener("click touchstart", upDest, false);
 //document.addEventListener("mousemove", upDest, false);
 
 // input -> calculation -> display
